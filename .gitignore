@@ -1,0 +1,27 @@
+# emacs
+*~
+\#*\#
+.emacs.desktop
+.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+.org-id-locations
+*_archive
+*_flymake.*
+eshell/
+elpa/
+*.rel
+auto/
+.cask/
+dist/
+flycheck_*.el
+server/
+.projectile
+.dir-locals.el
+network-security.data
+.cache/
+transient/
+.lsp-session-v1
+smex-items
