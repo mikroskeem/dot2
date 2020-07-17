@@ -292,15 +292,33 @@
   :ensure t
   :hook ((dired-mode . all-the-icons-dired-mode)))
 
+(use-package erc-image
+  :ensure t
+  :config
+  (add-to-list 'erc-modules 'image)
+  (erc-update-modules))
+
 ;; (use-package helm
 ;;   :ensure t)
+
+(defun testing-telega-ignore-hook (msg &rest notused)
+  (let ((content (plist-get msg :content))
+        (is-outgoing (plist-get msg :is_outgoing)))
+    (when (and (not is-outgoing) (string= "messageSticker" (plist-get content :@type)))
+      (message "Ignored sticker")
+      (telega-msg-ignore msg))))
+
+(add-hook 'telega-chat-insert-message-hook 'testing-telega-ignore-hook)
 
 (let ((font-name (cond
                   ((memq window-system '(mac ns))
                    "Fira Code Retina-13")
                   ((memq window-system '(x))
                    "Hack-10"))))
-  (set-frame-font font-name nil t))
+  (add-to-list 'default-frame-alist
+               (cons 'font font-name))
+  ;;(set-frame-font font-name nil t)
+  )
 
 (when (string-equal system-type "darwin")
   ;; Needed to enable emoji rendering on OS X
@@ -333,6 +351,16 @@
       (native-compile-async "~/.emacs.d" 4 t)
     (error (message "failed to native-compile-async: %s" err))))
 
+(setq erc-interpret-mirc-color t)
+(setq erc-rename-buffers t)
+(setq erc-autojoin-channels-alist
+      '(("irc.spi.gt" "#paper" "#paper-help" "#paper-dev")))
+
+(add-to-list 'erc-modules 'netsplit)
+(add-to-list 'erc-modules 'notifications)
+(add-to-list 'erc-modules 'ring)
+(add-to-list 'erc-modules 'stamp)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -344,7 +372,7 @@
  '(global-whitespace-newline-mode nil)
  '(package-selected-packages
    (quote
-    (lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode company-lsp commenter clj-refactor aggressive-indent 2048-game)))
+    (erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode company-lsp commenter clj-refactor aggressive-indent 2048-game)))
  '(tab-stop-list (quote (4)))
  '(whitespace-action (quote (auto-cleanup))))
 
