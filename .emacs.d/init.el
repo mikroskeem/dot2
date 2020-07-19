@@ -348,7 +348,31 @@
 (when (fboundp 'native-compile-async)
   (message "native compile support present, woohoo")
   (condition-case err
-      (native-compile-async "~/.emacs.d" 4 t)
+      (let ((ignored-packages '("telega"))
+            (elpa-paths (directory-files "~/.emacs.d/elpa")))
+        (let ((filtered-paths
+               (seq-filter
+                (lambda (f)
+                  (when (and (not (string= "." f))
+                             (not (string= ".." f)))
+                    (let (elem val ip)
+                      (setq ip ignored-packages)
+                      (while (and ip (not val))
+                        (setq elem (car ip))
+                        (setq ip (cdr ip))
+                        (when (string-prefix-p elem f)
+                          (setq ip nil)
+                          (setq val t)))
+                      (not val))))
+                elpa-paths)))
+          (let (elem full-path)
+            (while filtered-paths
+              (setq elem (car filtered-paths))
+              (setq filtered-paths (cdr filtered-paths))
+              (setq full-path (format "~/.emacs.d/elpa/%s" elem))
+
+              (message "Compiling path: %s" full-path)
+              (native-compile-async full-path 4 t)))))
     (error (message "failed to native-compile-async: %s" err))))
 
 (setq erc-interpret-mirc-color t)
