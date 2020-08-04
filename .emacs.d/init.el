@@ -143,7 +143,8 @@
   :commands (lsp lsp-deferred)
   :hook ((js-mode . lsp-deferred)
          (typescript-mode . lsp-deferred)
-         (dart-mode . lsp-deferred))
+         (dart-mode . lsp-deferred)
+         (haskell-mode . lsp-deferred))
   :config
   (add-hook 'go-mode-hook (lambda ()
                             (lsp-deferred)
@@ -199,6 +200,11 @@
 (use-package magit
   :ensure t)
 
+(use-package elm-mode
+  :ensure t
+  :config
+  (add-to-list 'company-backends 'elm-company))
+
 (use-package yaml-mode
   :ensure t)
 
@@ -234,6 +240,14 @@
 
 (use-package dockerfile-mode
   :ensure t)
+
+(use-package haskell-mode
+  :ensure t)
+
+(use-package lsp-haskell
+  :ensure t
+  :config
+  (setq lsp-haskell-process-path-hie "hie-wrapper"))
 
 (use-package monokai-pro-theme
   :ensure t
