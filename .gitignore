@@ -25,3 +25,8 @@ network-security.data
 transient/
 .lsp-session-v1
 smex-items
+
+.dap-breakpoints
+eclipse.jdt.ls/
+url/
+workspace/
