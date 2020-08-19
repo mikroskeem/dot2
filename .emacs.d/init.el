@@ -326,12 +326,13 @@
 
 (let ((font-name (cond
                   ((memq window-system '(mac ns))
-                   "Fira Code Retina-13")
+                   ;;"Fira Code Retina-13"
+                   "Hack-14")
                   ((memq window-system '(x))
                    "Hack-10"))))
   (add-to-list 'default-frame-alist
                (cons 'font font-name))
-  ;;(set-frame-font font-name nil t)
+  (set-frame-font font-name nil t)
   )
 
 (when (string-equal system-type "darwin")
@@ -395,9 +396,11 @@
       '(("irc.spi.gt" "#paper" "#paper-help" "#paper-dev")))
 
 (add-to-list 'erc-modules 'netsplit)
-(add-to-list 'erc-modules 'notifications)
 (add-to-list 'erc-modules 'ring)
 (add-to-list 'erc-modules 'stamp)
+;; Enable notifications only on Linux
+(if (and (string-equal "gnu/linux" system-type) (string-match-p "DBUS" system-configuration-features))
+    (add-to-list 'erc-modules 'notifications))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
