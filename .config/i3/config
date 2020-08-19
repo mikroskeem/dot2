@@ -14,6 +14,14 @@ bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
+bindsym XF86MonBrightnessUp exec --no-startup-id light -s sysfs/backlight/acpi_video0 -A 5
+bindsym XF86MonBrightnessDown exec --no-startup-id light -s sysfs/backlight/acpi_video0 -U 5
+
+bindsym XF86KbdBrightnessUp exec --no-startup-id light -s sysfs/leds/apple::kbd_backlight -A 5
+bindsym XF86KbdBrightnessDown exec --no-startup-id light -s sysfs/leds/apple::kbd_backlight -U 5
+
+
+
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
@@ -22,6 +30,11 @@ bindsym $mod+Return exec alacritty
 bindsym $mod+d exec rofi -show drun
 bindsym --release $mod+Shift+s exec --no-startup-id maim -s --format png /dev/stdout | xclip -selection clipboard -t image/png -i
 bindsym --release $mod+l exec --no-startup-id loginctl lock-session
+
+#exec mako
+#exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
+#exec hash dbus-update-activation-environment 2>/dev/null && \
+#     dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
 
 bindsym $mod+Shift+q kill
 
@@ -91,6 +104,7 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+#bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
 
 new_window 1pixel
 default_border pixel 1
@@ -116,8 +130,33 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+mode "raw" {
+	bindsym $mod+Mod1+r mode "default"
+}
+
+bindsym $mod+Mod1+r mode "raw"
+
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
         status_command i3status
 }
+
+#output * bg ~/Pictures/Wallpapers/wallhaven-dgzj9o.jpg stretch
+#output eDP-1 toggle
+#output DP-1 scale 1
+#
+#input "1452:636:bcm5974" {
+#	accel_profile flat
+#	pointer_accel 0.5
+#}
+#
+#input "4152:5924:SteelSeries_SteelSeries_Rival_600_Consumer_Control" {
+#	accel_profile flat
+#	pointer_accel 0.5
+#}
+#
+#input type:keyboard {
+#	xkb_layout us,ee
+#	xkb_options grp:alt_shift_toggle
+#}
