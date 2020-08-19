@@ -297,6 +297,19 @@
   :config
   (editorconfig-mode 1))
 
+(use-package lsp-java
+  :ensure t
+  :config
+  (add-hook 'java-mode-hook 'lsp))
+
+(use-package dap-mode
+  :ensure t
+  :after lsp-mode
+  :config (dap-auto-configure-mode))
+
+;;(use-package dap-java
+;;  :ensure t)
+
 (use-package all-the-icons
   :ensure t
   :config
@@ -363,7 +376,7 @@
 (when (fboundp 'native-compile-async)
   (message "native compile support present, woohoo")
   (condition-case err
-      (let ((ignored-packages '("telega"))
+      (let ((ignored-packages '("lsp" "telega"))
             (elpa-paths (directory-files "~/.emacs.d/elpa")))
         (let ((filtered-paths
                (seq-filter
@@ -408,14 +421,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   (quote
-    ("983eb22dae24cab2ce86ac26700accbf615a3f41fef164085d829fe0bcd3c236" default)))
+   '("983eb22dae24cab2ce86ac26700accbf615a3f41fef164085d829fe0bcd3c236" default))
  '(global-whitespace-newline-mode nil)
  '(package-selected-packages
-   (quote
-    (erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode company-lsp commenter clj-refactor aggressive-indent 2048-game)))
- '(tab-stop-list (quote (4)))
- '(whitespace-action (quote (auto-cleanup))))
+   '(dap-java lsp-java erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode company-lsp commenter clj-refactor aggressive-indent 2048-game))
+ '(tab-stop-list '(4))
+ '(whitespace-action '(auto-cleanup)))
 
 
 (custom-set-faces
