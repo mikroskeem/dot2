@@ -156,13 +156,6 @@
   :hook ((rustic-mode . lsp-ui-mode)
          (rust-mode . lsp-ui-mode)))
 
-(use-package company-lsp
-  :ensure t
-  :config
-  (push 'company-lsp company-backends)
-  ;;(setq company-lsp-async t)
-  (setq lsp-rust-server 'rust-analyzer))
-
 (use-package lsp-treemacs
   :ensure t
   :config
@@ -256,7 +249,7 @@
 
 (use-package exec-path-from-shell
   :ensure t
-  :if (memq window-system '(mac ns))
+  ;;  :if (memq window-system '(mac ns))
   :config
   (exec-path-from-shell-copy-envs '("PATH" "GOPATH" "JAVA_HOME" "SHELL"))
   (exec-path-from-shell-initialize)
@@ -424,7 +417,7 @@
    '("983eb22dae24cab2ce86ac26700accbf615a3f41fef164085d829fe0bcd3c236" default))
  '(global-whitespace-newline-mode nil)
  '(package-selected-packages
-   '(dap-java lsp-java erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode company-lsp commenter clj-refactor aggressive-indent 2048-game))
+   '(json-mode dap-java lsp-java erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode company-lsp commenter clj-refactor aggressive-indent 2048-game))
  '(tab-stop-list '(4))
  '(whitespace-action '(auto-cleanup)))
 
@@ -434,7 +427,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background "#2d2a2e" :foreground "#fcfcfa"))))
  '(rainbow-delimiters-depth-1-face ((t (:inherit rainbow-delimiters-base-face :foreground "DarkOrchid3"))))
  '(rainbow-delimiters-depth-2-face ((t (:inherit rainbow-delimiters-base-face :foreground "orange2"))))
  '(rainbow-delimiters-depth-3-face ((t (:inherit rainbow-delimiters-base-face :foreground "steel blue"))))
