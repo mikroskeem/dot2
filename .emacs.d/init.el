@@ -196,7 +196,8 @@
 (use-package elm-mode
   :ensure t
   :config
-  (add-to-list 'company-backends 'elm-company))
+  ;;(add-to-list 'company-backends 'elm-company)
+  )
 
 (use-package yaml-mode
   :ensure t)
@@ -318,6 +319,9 @@
   (add-to-list 'erc-modules 'image)
   (erc-update-modules))
 
+(use-package vterm
+  :ensure t)
+
 ;; (use-package helm
 ;;   :ensure t)
 
@@ -417,7 +421,7 @@
    '("983eb22dae24cab2ce86ac26700accbf615a3f41fef164085d829fe0bcd3c236" default))
  '(global-whitespace-newline-mode nil)
  '(package-selected-packages
-   '(json-mode dap-java lsp-java erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode company-lsp commenter clj-refactor aggressive-indent 2048-game))
+   '(vterm libvterm erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode commenter clj-refactor aggressive-indent 2048-game))
  '(tab-stop-list '(4))
  '(whitespace-action '(auto-cleanup)))
 
