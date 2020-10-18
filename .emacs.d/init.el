@@ -57,6 +57,10 @@
   (rainbow-delimiters-depth-8-face ((t (:inherit rainbow-delimiters-base-face :foreground "SpringGreen1"))))
   (rainbow-delimiters-depth-9-face ((t (:inherit rainbow-delimiters-base-face :foreground "yellow1")))))
 
+(use-package direnv
+  :config
+  (direnv-mode))
+
 (use-package paren
   :ensure t
   :config
@@ -421,7 +425,7 @@
    '("983eb22dae24cab2ce86ac26700accbf615a3f41fef164085d829fe0bcd3c236" default))
  '(global-whitespace-newline-mode nil)
  '(package-selected-packages
-   '(vterm libvterm erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode commenter clj-refactor aggressive-indent 2048-game))
+   '(direnv vterm libvterm erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode commenter clj-refactor aggressive-indent 2048-game))
  '(tab-stop-list '(4))
  '(whitespace-action '(auto-cleanup)))
 
