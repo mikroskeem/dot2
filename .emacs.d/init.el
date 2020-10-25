@@ -148,7 +148,9 @@
   :hook ((js-mode . lsp-deferred)
          (typescript-mode . lsp-deferred)
          (dart-mode . lsp-deferred)
-         (haskell-mode . lsp-deferred))
+         (haskell-mode . lsp-deferred)
+         (c-mode . lsp-deferred)
+         (cpp-mode . lsp-deferred))
   :config
   (add-hook 'go-mode-hook (lambda ()
                             (lsp-deferred)
@@ -190,6 +192,9 @@
   :hook ((lisp-mode . aggressive-indent-mode)
          (emacs-lisp-mode . aggressive-indent-mode)
          (clojure-mode . aggressive-indent-mode)))
+
+(use-package htmlize
+  :ensure t)
 
 (use-package org
   :ensure t)
@@ -261,8 +266,7 @@
   (let ((default-gopath (concat (getenv "HOME") "/go")))
     (unless (getenv "GOPATH")
       (setenv "GOPATH" default-gopath)
-      (add-to-list 'exec-path (concat default-gopath "/bin"))))
-  )
+      (add-to-list 'exec-path (concat default-gopath "/bin")))))
 
 (use-package origami
   :ensure t
@@ -292,8 +296,7 @@
 
 (use-package editorconfig
   :ensure t
-  :config
-  (editorconfig-mode 1))
+  :hook ((prog-mode . editorconfig-mode)))
 
 (use-package lsp-java
   :ensure t
@@ -425,7 +428,7 @@
    '("983eb22dae24cab2ce86ac26700accbf615a3f41fef164085d829fe0bcd3c236" default))
  '(global-whitespace-newline-mode nil)
  '(package-selected-packages
-   '(direnv vterm libvterm erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode commenter clj-refactor aggressive-indent 2048-game))
+   '(htmlize org-mode direnv vterm libvterm erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode commenter clj-refactor aggressive-indent 2048-game))
  '(tab-stop-list '(4))
  '(whitespace-action '(auto-cleanup)))
 
