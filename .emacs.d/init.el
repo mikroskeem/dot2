@@ -1,7 +1,19 @@
+;;; package --- personal emacs configuration
+;;; Commentary:
+;;; None?
+;;; Code:
+
 ;; Bump GC threshold and other stuff to speed up LSP  -*- lexical-binding: t; -*-
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 8 1024 1024)) ;; 8 megabytes
 
+(add-to-list 'load-path "~/.emacs.d/lisp")
+
+;; Try loading theme as early as possible to prevent white flash
+(load-theme 'deeper-blue)
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+
+(require 'cl-lib)
 (require 'package)
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
@@ -20,18 +32,17 @@
 (set-default-coding-systems 'utf-8)
 
 ;; Don't clutter working directories
-(setq auto-save-file-name-transforms (quote ((".*" "~/.emacs.d/autosaves/\\1" t))))
-(setq backup-directory-alist (quote ((".*" . "~/.emacs.d/backups/"))))
+(let ((backup-dir (expand-file-name (concat user-emacs-directory "backups")))
+      (asave-transform (concat (expand-file-name (concat user-emacs-directory "autosaves")) "\\1")))
+  (setq backup-directory-alist `((".*" . ,backup-dir)))
+  (setq auto-save-file-name-transforms `((".*" ,asave-transform t))))
 
-(load-theme 'deeper-blue)
-(add-to-list 'default-frame-alist '(ns-appearance . dark))
+;;(setq backup-directory-alist `(("." . ,backup-directory))
 (setq frame-resize-pixelwise t)
 
 (setq display-line-numbers-mode 1)
 (global-linum-mode 1)
-(show-paren-mode 1)
-(setq show-paren-delay 0)
-(column-number-mode 1)
+;;(column-number-mode 1) ;; NANO
 
 ;; Fuck tabs
 (setq-default indent-tabs-mode nil)
@@ -57,22 +68,34 @@
   (rainbow-delimiters-depth-8-face ((t (:inherit rainbow-delimiters-base-face :foreground "SpringGreen1"))))
   (rainbow-delimiters-depth-9-face ((t (:inherit rainbow-delimiters-base-face :foreground "yellow1")))))
 
+;; Setup quelpa
+(use-package quelpa
+  :ensure t)
+
+(quelpa
+ '(quelpa-use-package
+   :fetcher git
+   :url "https://github.com/quelpa/quelpa-use-package.git"))
+(require 'quelpa-use-package)
+
+;; Setup other packages
 (use-package direnv
-  :config
-  (direnv-mode))
+  :ensure t
+  :hook ((after-init . direnv-mode)))
 
 (use-package paren
   :ensure t
   :config
-  (show-paren-mode t))
+  (show-paren-mode t)
+  (setq show-paren-delay 0))
 
 (use-package company
   :ensure t
   :hook (after-init . global-company-mode)
   :config
   (setq company-minimum-prefix-length 1)
-  ;; Set delay to 1 to avoid burning CPU too much
-  (setq company-idle-delay 0))
+  ;; Set delay to 0.25 to avoid burning CPU too much
+  (setq company-idle-delay 0.25))
 
 (use-package elcord
   :ensure t
@@ -91,22 +114,31 @@
   :hook (after-init . global-hl-todo-mode)
   :config
   (setq hl-todo-keyword-faces
-        `(("TODO"  . (face-foreground 'warning))
-          ("FIXME" . (face-foreground 'error))
-          ("NOTE"  . (face-foreground 'success))
-          ("XXX"   . (face-foreground 'error)))))
+        `(("TODO"   warning)
+          ("FIXME"  error)
+          ("NOTE"   success)
+          ("XXX"    error))))
 
 (use-package diff-hl
   :ensure t
   :hook (after-init . global-diff-hl-mode))
+
+(use-package clojure-mode
+  :ensure t
+  :hook ((clojure-mode . eldoc-mode)))
 
 (use-package cider
   :ensure t
   :hook ((cider-mode . cider-company-enable-fuzzy-completion)
          (cider-repl-mode . cider-company-enable-fuzzy-completion)))
 
-(use-package neotree
+(use-package slime
   :ensure t)
+
+(use-package neotree
+  :ensure t
+  :config
+  (setq neo-window-fixed-size nil))
 
 (use-package treemacs
   :ensure t)
@@ -118,11 +150,6 @@
 
 (use-package rust-mode
   :ensure t)
-
-;; it'll disable rust-mode itself
-;; (use-package rustic
-;;   :ensure t
-;;   :commands (rustic-mode))
 
 (use-package cargo
   :ensure t
@@ -159,17 +186,7 @@
 
 (use-package lsp-ui
   :ensure t
-  :hook ((rustic-mode . lsp-ui-mode)
-         (rust-mode . lsp-ui-mode)))
-
-(use-package lsp-treemacs
-  :ensure t
-  :config
-  (lsp-treemacs-sync-mode 1))
-
-;; (use-package company-box
-;;   :ensure t
-;;   :hook (company-mode . company-box-mode))
+  :hook ((lsp-mode . lsp-ui-mode)))
 
 (use-package flycheck
   :ensure t
@@ -203,10 +220,7 @@
   :ensure t)
 
 (use-package elm-mode
-  :ensure t
-  :config
-  ;;(add-to-list 'company-backends 'elm-company)
-  )
+  :ensure t)
 
 (use-package yaml-mode
   :ensure t)
@@ -223,17 +237,22 @@
 (use-package js2-mode
   :ensure t)
 
+(use-package gleam-mode
+  ;;:ensure t
+  :quelpa (gleam-mode :fetcher github :repo "gleam-lang/gleam-mode"))
+
 (use-package dart-mode
   :ensure t)
 
 (use-package lsp-dart
   :ensure t
   :config
-  (add-hook 'dart-mode-hook (lambda ()
-                              (setq lsp-dart-sdk-dir "/Users/mark/sdks/flutter/bin/cache/dart-sdk/")
-                              (with-eval-after-load 'projectile
-                                (add-to-list 'projectile-project-root-files-bottom-up "pubspec.yaml")
-                                (add-to-list 'projectile-project-root-files-bottom-up "BUILD")))))
+  (add-hook 'dart-mode-hook
+            (lambda ()
+              (setq lsp-dart-sdk-dir "/Users/mark/sdks/flutter/bin/cache/dart-sdk/")
+              (with-eval-after-load 'projectile
+                (add-to-list 'projectile-project-root-files-bottom-up "pubspec.yaml")
+                (add-to-list 'projectile-project-root-files-bottom-up "BUILD")))))
 
 (use-package graphql-mode
   :ensure t)
@@ -252,10 +271,15 @@
   :config
   (setq lsp-haskell-process-path-hie "hie-wrapper"))
 
-(use-package monokai-pro-theme
+;;(use-package monokai-pro-theme
+;;  :ensure t
+;;  :config
+;;  (load-theme 'monokai-pro t))
+
+(use-package kaolin-themes
   :ensure t
   :config
-  (load-theme 'monokai-pro t))
+  (load-theme 'kaolin-galaxy t))
 
 (use-package exec-path-from-shell
   :ensure t
@@ -279,9 +303,12 @@
 (use-package telega
   :ensure t
   :config
+  (set 'telega-online-status-function 'telega-buffer-p)
+
   ;; Enable notifications only on Linux
   (if (and (string-equal "gnu/linux" system-type) (string-match-p "DBUS" system-configuration-features))
       (telega-notifications-mode 1))
+
   (add-hook 'telega-chat-mode-hook
             (lambda ()
               ;; Emoji, hashtag & username completion
@@ -292,7 +319,17 @@
                            (when (telega-chat-bot-p telega-chatbuf--chat)
                              '(telega-company-botcmd))))
               ;; Nope
-              (editorconfig-mode 0))))
+              (editorconfig-mode 0)))
+
+  (add-hook 'telega-chat-insert-message-hook
+            (lambda (msg &rest notused)
+              (let ((content (plist-get msg :content))
+                    (is-outgoing (plist-get msg :is_outgoing)))
+
+                ;;(dump-plist msg)
+                (when (and (not is-outgoing) (string= "messageSticker" (plist-get content :@type)))
+                  (message "Ignored sticker")
+                  (telega-msg-ignore msg))))))
 
 (use-package editorconfig
   :ensure t
@@ -308,9 +345,6 @@
   :after lsp-mode
   :config (dap-auto-configure-mode))
 
-;;(use-package dap-java
-;;  :ensure t)
-
 (use-package all-the-icons
   :ensure t
   :config
@@ -320,37 +354,28 @@
   :ensure t
   :hook ((dired-mode . all-the-icons-dired-mode)))
 
-(use-package erc-image
-  :ensure t
-  :config
-  (add-to-list 'erc-modules 'image)
-  (erc-update-modules))
-
 (use-package vterm
   :ensure t)
 
-;; (use-package helm
-;;   :ensure t)
+(use-package rg
+  :ensure t
+  :config
+  (rg-enable-default-bindings))
 
-(defun testing-telega-ignore-hook (msg &rest notused)
-  (let ((content (plist-get msg :content))
-        (is-outgoing (plist-get msg :is_outgoing)))
-    (when (and (not is-outgoing) (string= "messageSticker" (plist-get content :@type)))
-      (message "Ignored sticker")
-      (telega-msg-ignore msg))))
-
-(add-hook 'telega-chat-insert-message-hook 'testing-telega-ignore-hook)
+(defun dump-plist (obj)
+  (unless (null obj)
+    (princ (format "%s %s\n" (car obj)  (cadr obj)))
+    (dump-plist (cddr obj))))
 
 (let ((font-name (cond
                   ((memq window-system '(mac ns))
                    ;;"Fira Code Retina-13"
                    "Hack-14")
                   ((memq window-system '(x))
-                   "Hack-10"))))
+                   "Hack-9"))))
   (add-to-list 'default-frame-alist
                (cons 'font font-name))
-  (set-frame-font font-name nil t)
-  )
+  (set-frame-font font-name nil t))
 
 (when (string-equal system-type "darwin")
   ;; Needed to enable emoji rendering on OS X
@@ -364,7 +389,7 @@
   ;; https://gist.github.com/railwaycat/3498096
   (setq mac-option-modifier 'meta
         mac-command-modifier 'hyper)
-  
+
   (global-set-key [(hyper a)] 'mark-whole-buffer)
   (global-set-key [(hyper v)] 'yank)
   (global-set-key [(hyper c)] 'kill-ring-save)
@@ -374,62 +399,56 @@
                   (lambda () (interactive) (delete-window)))
   (global-set-key [(hyper z)] 'undo))
 
-(add-hook 'clojure-mode-hook 'eldoc-mode)
-
 ;; Utilize native support if available
-(when (fboundp 'native-compile-async)
-  (message "native compile support present, woohoo")
-  (condition-case err
-      (let ((ignored-packages '("lsp" "telega"))
-            (elpa-paths (directory-files "~/.emacs.d/elpa")))
-        (let ((filtered-paths
-               (seq-filter
-                (lambda (f)
-                  (when (and (not (string= "." f))
-                             (not (string= ".." f)))
-                    (let (elem val ip)
-                      (setq ip ignored-packages)
-                      (while (and ip (not val))
-                        (setq elem (car ip))
-                        (setq ip (cdr ip))
-                        (when (string-prefix-p elem f)
-                          (setq ip nil)
-                          (setq val t)))
-                      (not val))))
-                elpa-paths)))
-          (let (elem full-path)
-            (while filtered-paths
-              (setq elem (car filtered-paths))
-              (setq filtered-paths (cdr filtered-paths))
-              (setq full-path (format "~/.emacs.d/elpa/%s" elem))
+(defun m-compile-all-packages ()
+  (when (fboundp 'native-compile-async)
+    (message "native compile support present, woohoo")
+    (condition-case err
+        (let ((ignored-packages '("lsp" "telega"))
+              (elpa-paths (directory-files "~/.emacs.d/elpa")))
+          (let ((filtered-paths
+                 (seq-filter
+                  (lambda (f)
+                    (when (and (not (string= "." f))
+                               (not (string= ".." f)))
+                      (let (elem val ip)
+                        (setq ip ignored-packages)
+                        (while (and ip (not val))
+                          (setq elem (car ip))
+                          (setq ip (cdr ip))
+                          (when (string-prefix-p elem f)
+                            (setq ip nil)
+                            (setq val t)))
+                        (not val))))
+                  elpa-paths)))
+            (let (elem full-path)
+              (while filtered-paths
+                (setq elem (car filtered-paths))
+                (setq filtered-paths (cdr filtered-paths))
+                (setq full-path (format "~/.emacs.d/elpa/%s" elem))
 
-              (message "Compiling path: %s" full-path)
-              (native-compile-async full-path 4 t)))))
-    (error (message "failed to native-compile-async: %s" err))))
+                (message "Compiling path: %s" full-path)
+                (native-compile-async full-path 4 t)))))
+      (error (message "failed to native-compile-async: %s" err)))))
 
-(setq erc-interpret-mirc-color t)
-(setq erc-rename-buffers t)
-(setq erc-autojoin-channels-alist
-      '(("irc.spi.gt" "#paper" "#paper-help" "#paper-dev")))
+(require 'm-erc)
 
-(add-to-list 'erc-modules 'netsplit)
-(add-to-list 'erc-modules 'ring)
-(add-to-list 'erc-modules 'stamp)
-;; Enable notifications only on Linux
-(if (and (string-equal "gnu/linux" system-type) (string-match-p "DBUS" system-configuration-features))
-    (add-to-list 'erc-modules 'notifications))
+(setq inferior-lisp-program "sbcl")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#2d2a2e" "#ff6188" "#a9dc76" "#ffd866" "#78dce8" "#ab9df2" "#a1efe4" "#fcfcfa"])
  '(custom-safe-themes
-   '("983eb22dae24cab2ce86ac26700accbf615a3f41fef164085d829fe0bcd3c236" default))
+   '("7e5d400035eea68343be6830f3de7b8ce5e75f7ac7b8337b5df492d023ee8483" "d9a28a009cda74d1d53b1fbd050f31af7a1a105aa2d53738e9aa2515908cac4c" "5846b39f2171d620c45ee31409350c1ccaddebd3f88ac19894ae15db9ef23035" "983eb22dae24cab2ce86ac26700accbf615a3f41fef164085d829fe0bcd3c236" default))
  '(global-whitespace-newline-mode nil)
  '(package-selected-packages
-   '(htmlize org-mode direnv vterm libvterm erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode commenter clj-refactor aggressive-indent 2048-game))
+   '(quelpa-use-package quelpa gleam-mode slime rg mu4e-dashboard htmlize org-mode direnv vterm libvterm erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode commenter clj-refactor aggressive-indent 2048-game))
  '(tab-stop-list '(4))
+ '(warning-suppress-types '(((flycheck syntax-checker)) (direnv) (comp)))
  '(whitespace-action '(auto-cleanup)))
 
 
@@ -449,3 +468,6 @@
  '(rainbow-delimiters-depth-9-face ((t (:inherit rainbow-delimiters-base-face :foreground "yellow1"))))
  '(whitespace-line ((t nil)))
  '(whitespace-newline ((t (:foreground "darkgray" :weight normal)))))
+
+(provide 'init)
+;;; init.el ends here
