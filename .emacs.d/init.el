@@ -362,6 +362,12 @@
   :config
   (rg-enable-default-bindings))
 
+(use-package hcl-mode
+  :ensure t)
+
+(use-package terraform-mode
+  :ensure t)
+
 (defun dump-plist (obj)
   (unless (null obj)
     (princ (format "%s %s\n" (car obj)  (cadr obj)))
@@ -431,7 +437,9 @@
                 (native-compile-async full-path 4 t)))))
       (error (message "failed to native-compile-async: %s" err)))))
 
-(require 'm-erc)
+;;(m-compile-all-packages)
+
+;;(require 'm-erc)
 
 (setq inferior-lisp-program "sbcl")
 
@@ -446,10 +454,11 @@
    '("7e5d400035eea68343be6830f3de7b8ce5e75f7ac7b8337b5df492d023ee8483" "d9a28a009cda74d1d53b1fbd050f31af7a1a105aa2d53738e9aa2515908cac4c" "5846b39f2171d620c45ee31409350c1ccaddebd3f88ac19894ae15db9ef23035" "983eb22dae24cab2ce86ac26700accbf615a3f41fef164085d829fe0bcd3c236" default))
  '(global-whitespace-newline-mode nil)
  '(package-selected-packages
-   '(quelpa-use-package quelpa gleam-mode slime rg mu4e-dashboard htmlize org-mode direnv vterm libvterm erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode commenter clj-refactor aggressive-indent 2048-game))
+   '(terraform-mode projectile quelpa-use-package quelpa gleam-mode slime rg mu4e-dashboard htmlize org-mode direnv vterm libvterm erc-image lsp-dart treemacs dart-mode graphql-mode all-the-icons-dired all-the-icons neotree typescript-mode company-box racer cargo editorconfig telega dockerfile-mode origami yafolding fold-this yasnippet-snippets yaml-mode use-package smex rjsx-mode rainbow-delimiters nix-mode monokai-theme monokai-pro-theme magit lsp-ui hl-todo go-mode flycheck exec-path-from-shell epc elcord diff-hl dhall-mode commenter clj-refactor aggressive-indent 2048-game))
  '(tab-stop-list '(4))
  '(warning-suppress-types '(((flycheck syntax-checker)) (direnv) (comp)))
- '(whitespace-action '(auto-cleanup)))
+ '(whitespace-action '(auto-cleanup))
+ '(terraform-indent-level 2))
 
 
 (custom-set-faces

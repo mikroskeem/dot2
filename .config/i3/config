@@ -198,8 +198,7 @@ input "4152:5924:SteelSeries_SteelSeries_Rival_600_Consumer_Control" {
 	pointer_accel 0.5
 }
 
-
 input "type:keyboard" {
 	xkb_layout us,ee
-	xkb_options grp:alt_space_toggle
+	xkb_options grp:alt_shift_toggle
 }
